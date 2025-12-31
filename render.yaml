@@ -1,0 +1,32 @@
+services:
+  # API Service
+  - type: web
+    name: pdf-chatbot-api
+    env: docker
+    dockerfilePath: ./Dockerfile.api
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: API_BASE_URL
+        value: https://pdf-chatbot-api.onrender.com
+    healthCheckPath: /
+
+  # Frontend Service
+  - type: web
+    name: pdf-chatbot-frontend
+    env: docker
+    dockerfilePath: ./Dockerfile.frontend
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          name: pdf-chatbot-api
+          type: web
+          property: host
+        value: https://pdf-chatbot-api.onrender.com
+      - key: OPENAI_API_KEY
+        sync: false
+

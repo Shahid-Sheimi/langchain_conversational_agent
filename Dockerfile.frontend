@@ -1,0 +1,41 @@
+# Dockerfile for Frontend service only
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+
+# Upgrade pip
+RUN /opt/venv/bin/pip install --upgrade pip
+
+# Copy requirements and install
+COPY requirements.txt .
+RUN /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Final image
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy only frontend source code
+COPY frontend/ /app/frontend/
+
+# Expose port (use PORT env var for cloud platforms)
+EXPOSE 8501
+
+# Default command (can be overridden)
+# Uses PORT env var if set, otherwise defaults to 8501
+CMD sh -c "streamlit run frontend/app.py --server.port=${PORT:-8501} --server.address=0.0.0.0"
+
