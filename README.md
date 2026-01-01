@@ -1,6 +1,18 @@
-# PDF Chatbot Application
+# Overview PDF Chatbot Application
 Python 3.12.3
 A Python-based AI/ML application that enables users to upload PDF documents and interact with a chatbot that answers questions based on the document content. Built with FastAPI backend and Streamlit frontend, using LangChain and OpenAI for intelligent document processing and question-answering.
+
+# PDF Chatbot — Hugging Face Space
+
+Live demo: https://huggingface.co/spaces/shahidhossein/pdf-chatbot
+
+A single-container Hugging Face Space that lets users upload PDF documents and chat with an AI assistant that answers from the document content.
+
+Quick highlights
+- Upload PDFs, extract text, build FAISS vector store
+- Ask questions — answers are generated with OpenAI using relevant document context
+- Single Docker container: Streamlit frontend + FastAPI backend
+
 
 ## 📋 Table of Contents
 
@@ -253,6 +265,60 @@ docker run -p 8501:8501 -e API_BASE_URL=http://api:8000 pdf-chatbot-frontend
 - **frontend**: Streamlit frontend service (port 8501)
 - **Volumes**: Persistent storage for uploads and vector databases
 - **Network**: Internal network for service communication
+
+## 🤗 Hugging Face Spaces Deployment
+
+### Quick Start
+
+1. **Create a new Space on Hugging Face:**
+   - Go to [Hugging Face Spaces](https://huggingface.co/spaces)
+   - Click "Create new Space"
+   - Choose a name and select **"Docker"** as the SDK
+   - Select appropriate hardware (CPU or GPU if needed)
+
+2. **Set up the Space:**
+   - Clone your Space repository
+   - Copy these files to your Space repository:
+     - `Dockerfile.hf` (rename to `Dockerfile`)
+     - `start_hf.sh`
+     - `api/` directory
+     - `frontend/` directory
+     - `requirements.txt`
+   - Commit and push to your Space
+
+3. **Configure Environment Variables:**
+   - Go to Space Settings → Variables and Secrets
+   - Add Secret: `OPENAI_API_KEY` with your OpenAI API key
+   - Optionally add Variable: `API_BASE_URL=http://localhost:8000`
+
+4. **The Space will automatically build and deploy!**
+
+### Files for Hugging Face Spaces
+
+The following files are specifically for Hugging Face deployment:
+
+- **`Dockerfile.hf`**: Dockerfile for single-container deployment (rename to `Dockerfile` in your Space)
+- **`start_hf.sh`**: Startup script that runs both API and Frontend services
+- **`README_HF.md`**: Template README for Hugging Face Spaces (with YAML frontmatter)
+
+### Important Notes
+
+- Hugging Face Spaces uses port **7860** by default (configured in `start_hf.sh`)
+- Both services run in a single container (API on port 8000 internally, Frontend on 7860)
+- The frontend connects to the API via `localhost:8000` within the container
+- No `docker-compose.yml` support - use the single-container approach
+- Set your `OPENAI_API_KEY` as a Secret in Space Settings
+
+### Updating Your Space
+
+After making changes, simply push to your Space repository:
+```bash
+git add .
+git commit -m "Update application"
+git push
+```
+
+The Space will automatically rebuild and redeploy.
 
 ## 📚 API Documentation
 

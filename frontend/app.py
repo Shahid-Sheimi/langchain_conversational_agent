@@ -12,6 +12,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Configuration
+# For Hugging Face Spaces, use localhost since both services run in the same container
+# For local development, use the configured API_BASE_URL or default to localhost:8000
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 # Page Configuration
